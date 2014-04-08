@@ -113,7 +113,7 @@ void dump (double start, double end, PajeSimulator *simulator)
           PajeEntity *entity = *it;
 
           //output entity description
-          std::cout << entity->description() << std::endl;
+          std::cout << entity->description()+"testee" << std::endl;
         }
       }
     }

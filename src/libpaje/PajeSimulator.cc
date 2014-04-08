@@ -15,10 +15,11 @@
     along with PajeNG. If not, see <http://www.gnu.org/licenses/>.
 */
 #include "PajeSimulator.h"
-#include "PajeException.h"
+#include "PajeException.h",
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
-
+#include "ThreadPool.h"
+ThreadPool pool(2);
 int ignoreIncompleteLinks = 0;
 
 PajeSimulator::PajeSimulator ()
@@ -153,18 +154,27 @@ PajeSimulator::~PajeSimulator ()
 void PajeSimulator::inputEntity (PajeObject *data)
 {
   //get event, set last known time
+  
   PajeTraceEvent *event = (PajeTraceEvent*)data;
   setLastKnownTime (event);
   //change the simulated behavior according to the event
   PajeEventId eventId = event->pajeEventId();
   if (eventId < PajeEventIdCount){
     if (invocation[eventId]){
-      CALL_MEMBER_PAJE_SIMULATOR(*this,invocation[eventId])(event);
+       // pool.enqueue(CALL_MEMBER_PAJE_SIMULATOR(*this,invocation[eventId])(event));
+       // pool.enqueue(CALL_MEMBER_PAJE_SIMULATOR(),*this,invocation[eventId])(event);
+         pool.enqueue(inputEntity {
+              CALL_MEMBER_PAJE_SIMULATOR(*this,invocation[eventId])(event);
+         });
+      //CALL_MEMBER_PAJE_SIMULATOR(*this,invocation[eventId])(event);
+      
     }
   }else{
     throw PajeSimulationException ("Unknow event id.");
   }
+ 
 }
+
 
 void PajeSimulator::startReading (void)
 {

@@ -14,7 +14,7 @@
 # along with PajeNG. If not, see <http://www.gnu.org/licenses/>.
 CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 PROJECT(pajeng)
-
+SET(CMAKE_CXX_FLAGS "-pthread -std=gnu++11")
 # The PajeNG (Qt4 version)
 SET(PAJE_HEADERS
   src/pajeng/PajeApplication.h
@@ -47,7 +47,8 @@ SET(LIBPAJE_HEADERS
   src/libpaje/PajeObject.h
   src/libpaje/PajeSimulator.h
   src/libpaje/PajeType.h
-  src/libpaje/PajeValue.h)
+  src/libpaje/PajeValue.h
+  src/libpaje/ThreadPool.h)
 SET(LIBPAJE_SOURCES
   src/libpaje/PajeEventDefinition.cc
   src/libpaje/PajeTraceEvent.cc
@@ -66,6 +67,7 @@ SET(LIBPAJE_SOURCES
   src/libpaje/PajeContainer.cc
   src/libpaje/PajeColor.cc
   src/libpaje/PajeException.cc
+  src/libpaje/ThreadPool.h
 )
 
 # The Paje Utils Library (libpajeutils)

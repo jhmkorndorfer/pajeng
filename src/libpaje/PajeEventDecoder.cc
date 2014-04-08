@@ -16,7 +16,8 @@
 */
 #include "PajeEventDecoder.h"
 #include "PajeException.h"
-
+//#include "ThreadPool.h"
+//ThreadPool pool(2);
 static std::map<std::string,PajeEventId> knownPajeEvents = initPajeEventNamesToID ();
 static PajeEventId getPajeEventId (std::string eventName)
 {
@@ -230,7 +231,10 @@ void PajeEventDecoder::inputEntity (PajeObject *data)
     } else {
       PajeTraceEvent *event = PajeEventDecoder::scanEventLine (&line);
       if (event != NULL){
-        PajeComponent::outputEntity (event);
+          //pool.enqueue([&] {
+              PajeComponent::outputEntity(event);
+          //});
+        //PajeComponent::outputEntity (event);
         delete event;
       }
     }
