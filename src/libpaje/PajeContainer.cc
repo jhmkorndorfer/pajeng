@@ -207,6 +207,8 @@ void PajeContainer::demuxer (PajeEvent *event)
 
   //update container endtime
   setEndTime (event->time());
+  delete event->traceEvent();
+  delete event;
 }
 
 void PajeContainer::pajeNewEvent (PajeEvent *event)

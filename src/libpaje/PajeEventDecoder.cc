@@ -231,7 +231,6 @@ void PajeEventDecoder::inputEntity (PajeObject *data)
       PajeTraceEvent *event = PajeEventDecoder::scanEventLine (&line);
       if (event != NULL){
         PajeComponent::outputEntity (event);
-        delete event;
       }
     }
   }
