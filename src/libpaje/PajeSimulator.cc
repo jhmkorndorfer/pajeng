@@ -18,6 +18,8 @@
 #include "PajeException.h"
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
+#include <thread>
+
 
 int ignoreIncompleteLinks = 0;
 
@@ -481,7 +483,9 @@ void PajeSimulator::pajeDestroyContainer (PajeTraceEvent *traceEvent)
 
   //mark container as destroyed
   PajeDestroyContainerEvent event (traceEvent, container, containerType);
-  container->demuxer (&event);
+  std::thread t1(&PajeContainer::demuxer,container,&event);
+  t1.join();
+  //container->demuxer (&event);
 }
 
 void PajeSimulator::pajeNewEvent (PajeTraceEvent *traceEvent)
@@ -536,7 +540,9 @@ void PajeSimulator::pajeNewEvent (PajeTraceEvent *traceEvent)
   }
 
   PajeNewEventEvent event (traceEvent, container, type, val);
-  container->demuxer (&event);
+  std::thread t2(&PajeContainer::demuxer,container,&event);
+  t2.join();
+  //container->demuxer (&event);
 }
 
 void PajeSimulator::pajeSetState (PajeTraceEvent *traceEvent)
@@ -591,7 +597,9 @@ void PajeSimulator::pajeSetState (PajeTraceEvent *traceEvent)
   }
 
   PajeSetStateEvent event (traceEvent, container, type, val);
-  container->demuxer (&event);
+  std::thread t3(&PajeContainer::demuxer,container,&event);
+  t3.join();
+  //container->demuxer (&event);
 }
 
 void PajeSimulator::pajePushState (PajeTraceEvent *traceEvent)
@@ -646,7 +654,9 @@ void PajeSimulator::pajePushState (PajeTraceEvent *traceEvent)
   }
 
   PajePushStateEvent event (traceEvent, container, type, val);
-  container->demuxer (&event);
+  std::thread t4(&PajeContainer::demuxer,container,&event);
+  t4.join();
+  //container->demuxer (&event);
 }
 
 void PajeSimulator::pajePopState (PajeTraceEvent *traceEvent)
@@ -692,7 +702,9 @@ void PajeSimulator::pajePopState (PajeTraceEvent *traceEvent)
   }
 
   PajePopStateEvent event (traceEvent, container, type);
-  container->demuxer (&event);
+  std::thread t5(&PajeContainer::demuxer,container,&event);
+  t5.join();
+  //container->demuxer (&event);
 }
 
 
@@ -739,7 +751,9 @@ void PajeSimulator::pajeResetState (PajeTraceEvent *traceEvent)
   }
 
   PajeResetStateEvent event (traceEvent, container, type);
-  container->demuxer (&event);
+  std::thread t6(&PajeContainer::demuxer,container,&event);
+  t6.join();
+  //container->demuxer (&event);
 }
 
 void PajeSimulator::pajeSetVariable (PajeTraceEvent *traceEvent)
@@ -788,7 +802,9 @@ void PajeSimulator::pajeSetVariable (PajeTraceEvent *traceEvent)
   float v = strtof (value.c_str(), NULL);
 
   PajeSetVariableEvent event (traceEvent, container, type, v);
-  container->demuxer (&event);
+  std::thread t7(&PajeContainer::demuxer,container,&event);
+  t7.join();
+  //container->demuxer (&event);
 }
 
 void PajeSimulator::pajeAddVariable (PajeTraceEvent *traceEvent)
@@ -836,7 +852,9 @@ void PajeSimulator::pajeAddVariable (PajeTraceEvent *traceEvent)
 
   float v = strtof (value.c_str(), NULL);
   PajeAddVariableEvent event (traceEvent, container, type, v);
-  container->demuxer (&event);
+  std::thread t8(&PajeContainer::demuxer,container,&event);
+  t8.join();
+  //container->demuxer (&event);
 }
 
 void PajeSimulator::pajeSubVariable (PajeTraceEvent *traceEvent)
@@ -885,7 +903,9 @@ void PajeSimulator::pajeSubVariable (PajeTraceEvent *traceEvent)
   float v = strtof (value.c_str(), NULL);
 
   PajeSubVariableEvent event (traceEvent, container, type, v);
-  container->demuxer (&event);
+  std::thread t9(&PajeContainer::demuxer,container,&event);
+  t9.join();
+  //container->demuxer (&event);
 }
 
 void PajeSimulator::pajeStartLink (PajeTraceEvent *traceEvent)
@@ -961,7 +981,9 @@ void PajeSimulator::pajeStartLink (PajeTraceEvent *traceEvent)
   }
 
   PajeStartLinkEvent event (traceEvent, container, type, val, startcontainer, key);
-  container->demuxer (&event);
+  std::thread t10(&PajeContainer::demuxer,container,&event);
+  t10.join();
+  //container->demuxer (&event);
 }
 
 void PajeSimulator::pajeEndLink (PajeTraceEvent *traceEvent)
@@ -1037,5 +1059,7 @@ void PajeSimulator::pajeEndLink (PajeTraceEvent *traceEvent)
   }
 
   PajeEndLinkEvent event (traceEvent, container, type, val, endcontainer, key);
-  container->demuxer (&event);
+  std::thread t11(&PajeContainer::demuxer,container,&event);
+  t11.join();
+  //container->demuxer (&event);
 }

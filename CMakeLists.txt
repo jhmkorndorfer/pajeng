@@ -14,7 +14,7 @@
 # along with PajeNG. If not, see <http://www.gnu.org/licenses/>.
 CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 PROJECT(pajeng)
-
+SET(CMAKE_CXX_FLAGS "-ggdb -pthread -std=gnu++11")
 # The PajeNG (Qt4 version)
 SET(PAJE_HEADERS
   src/pajeng/PajeApplication.h
