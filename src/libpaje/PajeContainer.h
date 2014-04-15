@@ -24,6 +24,7 @@
 #include "PajeTraceEvent.h"
 #include "PajeEvent.h"
 #include "PajeEntity.h"
+#include <thread>
 
 class PajeContainer;
 class PajeEvent;
@@ -33,7 +34,14 @@ private:
   double stopSimulationAtTime;
   void (PajeContainer::*invocation[PajeEventIdCount])(PajeEvent *);
   bool _destroyed;
-
+  
+private:
+  std::thread containerThread;
+  
+public:
+  void setContainerThread(PajeEvent *event);
+  void getContainerThread();
+  
 public:
   std::string _alias;
   std::map<std::string,PajeContainer*> children;
@@ -43,13 +51,13 @@ private:
   std::map<PajeType*,std::set<std::string> > linksUsedKeys; //all used keys for this container
   std::map<PajeType*,std::map<std::string,PajeUserLink*> > pendingLinks; //all pending links
   std::map<PajeType*,std::vector<PajeUserState*> > stackStates; //the simulation stack for state types
-
+  
   //keeps all simulated entities (variables, links, states and events)
   std::map<PajeType*,std::vector<PajeEntity*> > entities;
 
 private:
   void init (std::string alias, PajeContainer *parent);
-
+  
 public:
   PajeContainer (double time, std::string name, std::string alias, PajeContainer *parent, PajeType *type, PajeTraceEvent *event);
   PajeContainer (double time, std::string name, std::string alias, PajeContainer *parent, PajeType *type, PajeTraceEvent *event, double stopat);

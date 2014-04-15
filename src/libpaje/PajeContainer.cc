@@ -21,6 +21,21 @@ extern int ignoreIncompleteLinks;
 
 #define CALL_MEMBER_PAJE_CONTAINER(object,ptr) ((object).*(ptr))
 
+void PajeContainer::getContainerThread() 
+{
+    if(this->containerThread.joinable()){
+      this->containerThread.join();
+    }
+}
+
+void PajeContainer::setContainerThread(PajeEvent *event) 
+{   
+    this->containerThread = std::thread(&PajeContainer::demuxer,this,event);
+    //std::swap(conThread,this->containerThread);
+    //this->containerThread = containerThread;
+    //this->containerThread.detach();
+}
+
 PajeContainer::PajeContainer (double time, std::string name, std::string alias, PajeContainer *parent, PajeType *type, PajeTraceEvent *event)
   : PajeNamedEntity (parent, type, time, name, event)
 {
@@ -692,6 +707,7 @@ PajeContainer *PajeContainer::pajeCreateContainer (double time, PajeType *type, 
   PajeContainer *newContainer = new PajeContainer (time, name, alias, this, type, event, stopat);
   children[newContainer->identifier()] = newContainer;
   return newContainer;
+    
 }
 
 void PajeContainer::pajeDestroyContainer (double time, PajeEvent *event)
