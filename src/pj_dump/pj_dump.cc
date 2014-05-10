@@ -17,12 +17,14 @@
 #include <stdlib.h>
 #include <string>
 #include <iostream>
+#include <stdio.h>
 #include <exception>
 #include "PajeFileReader.h"
 #include "PajeException.h"
 #include "PajeEventDecoder.h"
 #include "PajeSimulator.h"
 #include <argp.h>
+#include <sys/time.h>
 
 #define VALIDATE_INPUT_SIZE 2
 static char doc[] = "Dumps FILE, or standard input, in a CSV-like textual format";
@@ -44,7 +46,14 @@ struct arguments {
   int input_size;
   int ignoreIncompleteLinks;
 };
-
+static double gettime (void)
+{
+  struct timeval tr;
+  gettimeofday(&tr, NULL);
+  return (double)tr.tv_sec+(double)tr.tv_usec/1000000;
+}
+double inicio;
+double fim;
 static int parse_options (int key, char *arg, struct argp_state *state)
 {
   struct arguments *arguments = (struct arguments*)(state->input);
@@ -122,6 +131,8 @@ void dump (double start, double end, PajeSimulator *simulator)
 
 int main (int argc, char **argv)
 {
+  //printf("%f\n",gettime());
+  inicio = gettime();
   struct arguments arguments;
   bzero (&arguments, sizeof(struct arguments));
   arguments.start = arguments.end = arguments.stopat = -1;
@@ -159,9 +170,10 @@ int main (int argc, char **argv)
   }catch (PajeException& e){
     e.reportAndExit();
   }
-
-  dump (arguments.start, arguments.end, simulator);
-
+  fim = gettime() - inicio;
+  printf("%f\n",fim);	
+  exit(1);
+  //dump (arguments.start, arguments.end, simulator);
   delete reader;
   delete decoder;
   delete simulator;

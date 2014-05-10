@@ -18,25 +18,27 @@
 #include "PajeException.h"
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
-#include <thread>
 
 
 int ignoreIncompleteLinks = 0;
 
 PajeSimulator::PajeSimulator ()
 {
+  this->pool.setQueue(4);
   stopSimulationAtTime = -1;
   init ();
 }
 
 PajeSimulator::PajeSimulator (double stopat)
 {
+  this->pool.setQueue(4);
   stopSimulationAtTime = stopat;
   init ();
 }
 
 PajeSimulator::PajeSimulator (double stopat, int ignore)
 {
+  this->pool.setQueue(4);
   stopSimulationAtTime = stopat;
   ignoreIncompleteLinks = ignore;
   init ();
@@ -483,8 +485,10 @@ void PajeSimulator::pajeDestroyContainer (PajeTraceEvent *traceEvent)
   
   //mark container as destroyed
   PajeDestroyContainerEvent *event = new PajeDestroyContainerEvent (traceEvent, container, containerType);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 void PajeSimulator::pajeNewEvent (PajeTraceEvent *traceEvent)
@@ -539,8 +543,10 @@ void PajeSimulator::pajeNewEvent (PajeTraceEvent *traceEvent)
   }
 
   PajeNewEventEvent *event = new PajeNewEventEvent (traceEvent, container, type, val);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 void PajeSimulator::pajeSetState (PajeTraceEvent *traceEvent)
@@ -595,8 +601,10 @@ void PajeSimulator::pajeSetState (PajeTraceEvent *traceEvent)
   }
 
   PajeSetStateEvent *event = new PajeSetStateEvent (traceEvent, container, type, val);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 void PajeSimulator::pajePushState (PajeTraceEvent *traceEvent)
@@ -651,8 +659,10 @@ void PajeSimulator::pajePushState (PajeTraceEvent *traceEvent)
   }
 
   PajePushStateEvent *event = new PajePushStateEvent (traceEvent, container, type, val);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 void PajeSimulator::pajePopState (PajeTraceEvent *traceEvent)
@@ -698,8 +708,10 @@ void PajeSimulator::pajePopState (PajeTraceEvent *traceEvent)
   }
 
   PajePopStateEvent *event = new PajePopStateEvent (traceEvent, container, type);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 
@@ -746,8 +758,10 @@ void PajeSimulator::pajeResetState (PajeTraceEvent *traceEvent)
   }
 
   PajeResetStateEvent *event = new PajeResetStateEvent (traceEvent, container, type);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 void PajeSimulator::pajeSetVariable (PajeTraceEvent *traceEvent)
@@ -796,8 +810,10 @@ void PajeSimulator::pajeSetVariable (PajeTraceEvent *traceEvent)
   float v = strtof (value.c_str(), NULL);
 
   PajeSetVariableEvent *event = new PajeSetVariableEvent (traceEvent, container, type, v);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 void PajeSimulator::pajeAddVariable (PajeTraceEvent *traceEvent)
@@ -845,8 +861,10 @@ void PajeSimulator::pajeAddVariable (PajeTraceEvent *traceEvent)
 
   float v = strtof (value.c_str(), NULL);
   PajeAddVariableEvent *event = new PajeAddVariableEvent (traceEvent, container, type, v);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 void PajeSimulator::pajeSubVariable (PajeTraceEvent *traceEvent)
@@ -895,8 +913,10 @@ void PajeSimulator::pajeSubVariable (PajeTraceEvent *traceEvent)
   float v = strtof (value.c_str(), NULL);
 
   PajeSubVariableEvent *event = new PajeSubVariableEvent (traceEvent, container, type, v);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainersad();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 void PajeSimulator::pajeStartLink (PajeTraceEvent *traceEvent)
@@ -972,8 +992,10 @@ void PajeSimulator::pajeStartLink (PajeTraceEvent *traceEvent)
   }
 
   PajeStartLinkEvent *event = new PajeStartLinkEvent (traceEvent, container, type, val, startcontainer, key);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }
 
 void PajeSimulator::pajeEndLink (PajeTraceEvent *traceEvent)
@@ -1049,6 +1071,8 @@ void PajeSimulator::pajeEndLink (PajeTraceEvent *traceEvent)
   }
 
   PajeEndLinkEvent *event = new PajeEndLinkEvent (traceEvent, container, type, val, endcontainer, key);
-  container->getContainerThread();
-  container->setContainerThread(event);
+  //container->getContainerThread();
+  //container->setContainerThread(event);
+  this->pool.enqueue(event);
+  //pool.enqueue(&PajeContainer::demuxer,container,event);
 }

@@ -24,7 +24,8 @@
 #include "PajeTraceEvent.h"
 #include "PajeEvent.h"
 #include "PajeEntity.h"
-#include <thread>
+//#include <thread>
+//#include "ThreadQueue.h"
 
 class PajeContainer;
 class PajeEvent;
@@ -34,15 +35,9 @@ private:
   double stopSimulationAtTime;
   void (PajeContainer::*invocation[PajeEventIdCount])(PajeEvent *);
   bool _destroyed;
-  
-private:
-  std::thread containerThread;
-  
-public:
-  void setContainerThread(PajeEvent *event);
-  void getContainerThread();
-  
-public:
+  public:
+      
+      
   std::string _alias;
   std::map<std::string,PajeContainer*> children;
   int depth;
