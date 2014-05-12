@@ -21,10 +21,11 @@ void ThreadQueue::setQueue(size_t threads){
             {
                 for(;;)
                 {
-                    //std::unique_lock<std::mutex> lock(this->queue_mutex);
+                   // std::unique_lock<std::mutex> lock(this->queue_mutex);
                     while(!this->stop && this->tasks.empty())
-                       //this->condition.wait(lock);
-                    if(this->stop && this->tasks.empty())
+                       //this->condition.wait_for(int 1);
+                   // if(this->stop && this->tasks.empty())
+                       // return;
                         return;
                     PajeContainer *container = this->tasks.front()->container();
                     container->demuxer(this->tasks.front());
@@ -32,20 +33,22 @@ void ThreadQueue::setQueue(size_t threads){
                     //lock.unlock();
                 }
             }
-        );
+        );   
    // }
 }
 void ThreadQueue::enqueue(PajeEvent *event) 
 {
-    if(stop)
-        throw std::runtime_error("enqueue on stopped ThreadPool");
-    {
+   // if(stop)
+     //   throw std::runtime_error("enqueue on stopped ThreadPool");
+    //{
         //std::unique_lock<std::mutex> lock(queue_mutex);
+        //his->queue_mutex.lock();
         tasks.push(event);
-    }
-    condition.notify_one();
+        //this->queue_mutex.unlock();
+        
+        // }
+       // condition.notify_one();
 }
-
 ThreadQueue::~ThreadQueue()
 {
     {
