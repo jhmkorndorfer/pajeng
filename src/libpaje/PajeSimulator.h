@@ -31,6 +31,7 @@
 #include "PajeType.h"
 #include "PajeContainer.h"
 #include "PajeComponent.h"
+#include "ThreadQueue.h"
 
 #define CALL_MEMBER_PAJE_SIMULATOR(object,ptr) ((object).*(ptr))
 
@@ -57,6 +58,7 @@ private:
   PajeColor *getColor (std::string color, PajeTraceEvent *event);
 
 public:
+  ThreadQueue workerQueue;  
   PajeSimulator();
   PajeSimulator(double stopat);
   PajeSimulator(double stopat, int ignoreIncompleteLinks);
