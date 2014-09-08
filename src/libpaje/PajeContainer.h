@@ -18,6 +18,7 @@
 #define __PAJE_CONTAINER_H
 #include <map>
 #include <vector>
+#include <queue>
 #include <algorithm>
 #include <string>
 #include "PajeType.h"
@@ -38,7 +39,7 @@ public:
   std::string _alias;
   std::map<std::string,PajeContainer*> children;
   int depth;
-
+  std::queue<PajeEvent*> container_events;
 private:
   std::map<PajeType*,std::set<std::string> > linksUsedKeys; //all used keys for this container
   std::map<PajeType*,std::map<std::string,PajeUserLink*> > pendingLinks; //all pending links
