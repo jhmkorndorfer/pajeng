@@ -17,7 +17,7 @@ PROJECT(pajeng)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(LIB_INSTALL_DIR lib${LIB_SUFFIX} CACHE PATH "Directory where libraries are installed (relative to CMAKE_INSTALL_PREFIX).")
-
+SET(CMAKE_CXX_FLAGS "-lpthread -std=c++11")
 # the cmake options
 OPTION(PAJENG         "The PajeNG visualization tool (Qt4 version)" ON)
 OPTION(PAJE_UTILS_LIBRARY "The Paje Utils library with QT-dependent components" ON)

@@ -20,6 +20,7 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <queue>
 #include "PajeType.h"
 #include "PajeTraceEvent.h"
 #include "PajeEvent.h"
@@ -38,6 +39,7 @@ public:
   std::string _alias;
   std::map<std::string,PajeContainer*> children;
   int depth;
+  std::queue<PajeEvent*> container_events;
 
 private:
   std::map<PajeType*,std::set<std::string> > linksUsedKeys; //all used keys for this container

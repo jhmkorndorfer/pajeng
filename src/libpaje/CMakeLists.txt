@@ -32,7 +32,9 @@ SET(LIBPAJE_HEADERS
   PajeSimulator.h
   PajeType.h
   PajeValue.h
-  PajeDefinitions.h)
+  PajeDefinitions.h
+  ThreadQueue.h
+)
 SET(LIBPAJE_SOURCES
   PajeEventDefinition.cc
   PajeTraceEvent.cc
@@ -52,6 +54,7 @@ SET(LIBPAJE_SOURCES
   PajeColor.cc
   PajeException.cc
   PajeDefinitions.cc
+  ThreadQueue.cc
 )
 
 FIND_PACKAGE(Boost REQUIRED)
