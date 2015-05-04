@@ -28,8 +28,9 @@ static double gettime (void)
   return (double)tr.tv_sec+(double)tr.tv_usec/1000000;
 }
 
-PajeUnity::PajeUnity (bool flexReader, bool strictHeader, std::string tracefilename, double stopat, int ignoreIncompleteLinks, char *probabilistic)
+PajeUnity::PajeUnity (bool flexReader, bool strictHeader, std::string tracefilename, double stopat, int ignoreIncompleteLinks, char *probabilistic, bool par, int nt)
 {
+  parallel = par;
   //basic configuration
   this->flexReader = flexReader;
 
@@ -59,7 +60,7 @@ PajeUnity::PajeUnity (bool flexReader, bool strictHeader, std::string tracefilen
     if (probabilistic){
       simulator = new PajeProbabilisticSimulator (probabilistic);
     }else{
-      simulator = new PajeSimulator (stopat, ignoreIncompleteLinks);
+      simulator = new PajeSimulator (stopat, ignoreIncompleteLinks, par, nt);
     }
 
 
@@ -91,6 +92,70 @@ PajeUnity::PajeUnity (bool flexReader, bool strictHeader, std::string tracefilen
     e.reportAndExit();
   }
   t2 = gettime();
+}
+
+PajeUnity::PajeUnity (bool flexReader, bool strictHeader, std::string tracefilename, double stopat, int ignoreIncompleteLinks, char *probabilistic, bool par, PajeContainer *contUn, std::map<std::string,PajeType*> typeMapUn)
+{
+   parallel = par;
+  //basic configuration
+  this->flexReader = flexReader;
+
+  //the global PajeDefinitions object
+  definitions = new PajeDefinitions (strictHeader);
+ 
+  try {
+    //alloc reader
+    if (flexReader){
+      if (tracefilename.empty()){
+	reader = new PajeFlexReader(definitions);
+      }else{
+	reader = new PajeFlexReader(tracefilename, definitions);
+      }
+    }else{
+      if (tracefilename.empty()){
+	reader = new PajeFileReader();
+      }else{
+        reader = new PajeFileReader (tracefilename);
+      }
+    }
+
+    //alloc decoder and simulator
+    if (!flexReader){
+      decoder = new PajeEventDecoder(definitions);
+    }
+    if (probabilistic){
+      simulator = new PajeProbabilisticSimulator (probabilistic);
+    }else{
+      simulator = new PajeSimulator (stopat, ignoreIncompleteLinks, parallel, contUn, typeMapUn);
+    }
+
+
+    //connect components
+    if (flexReader){
+      reader->setOutputComponent (simulator);
+      simulator->setInputComponent (reader);
+    }else{
+      reader->setOutputComponent (decoder);
+      decoder->setInputComponent (reader);
+      decoder->setOutputComponent (simulator);
+      simulator->setInputComponent (decoder);
+    }
+    simulator->setOutputComponent (this);
+    this->setInputComponent (simulator);
+  }catch (PajeException& e){
+    e.reportAndExit ();
+  }
+
+  //read and simulate
+  try {
+    reader->startReading ();
+    while (reader->hasMoreData() && simulator->keepSimulating()){
+      reader->readNextChunk ();
+    }
+    reader->finishedReading ();
+  }catch (PajeException& e){
+    e.reportAndExit();
+  }
 }
 
 PajeUnity::~PajeUnity ()

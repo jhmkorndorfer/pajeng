@@ -31,6 +31,7 @@
 #include "PajeType.h"
 #include "PajeContainer.h"
 #include "PajeComponent.h"
+#include "PajeParallelProcessor.h"
 
 #define CALL_MEMBER_PAJE_SIMULATOR(object,ptr) ((object).*(ptr))
 
@@ -38,14 +39,20 @@ class PajeSimulator : public PajeComponent {
 private:
   PajeContainerType *rootType;
   PajeContainer *root;
+  PajeContainer *rootMultiFile;
   std::map<std::string,PajeType*> typeMap;
+  std::map<std::string,PajeType*> typeMapMultiFile;
   std::map<std::string,PajeType*> typeNamesMap; //for names
   std::map<std::string,PajeContainer*> contMap;
   std::map<std::string,PajeContainer*> contNamesMap; //for names
+  PajeParallelProcessor *parallelProcessor;
 
-
+  
   double stopSimulationAtTime;
-
+  int numThreads;
+  bool parallel;
+  bool startThreads;
+  
   void init (void);
 
 private:
@@ -60,8 +67,11 @@ protected:
 
 public:
   PajeSimulator();
-  PajeSimulator(double stopat);
-  PajeSimulator(double stopat, int ignoreIncompleteLinks);
+  PajeSimulator(bool par);
+  PajeSimulator(double stopat, bool par);
+  PajeSimulator(double stopat, int ignoreIncompleteLinks, bool par);
+  PajeSimulator(double stopat, int ignoreIncompleteLinks, bool par, int nt);
+  PajeSimulator(double stopat, int ignoreIncompleteLinks, bool par, PajeContainer *contUn, std::map<std::string,PajeType*> typeMapUn);
   ~PajeSimulator();
   void report (void);
   bool keepSimulating (void);

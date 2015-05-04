@@ -20,13 +20,16 @@
 #include <exception>
 #include "PajeUnity.h"
 #include <argp.h>
+#include <stdlib.h>
 #include "libpaje_config.h"
 
 #define VALIDATE_INPUT_SIZE 2
 static char doc[] = "Checks if FILE, or standard input, strictly follows the Paje file format definition";
 static char args_doc[] = "[FILE]";
+double t1, t2;
 
 static struct argp_option options[] = {
+  {"multi-thread", 'm', "START", 0, "Sets the number workers(threads)"},
   {"no-strict", 'n', 0, OPTION_ARG_OPTIONAL, "Support old field names in event definitions"},
   {"quiet", 'q', 0, OPTION_ARG_OPTIONAL, "Be quiet"},
   {"time", 't', 0, OPTION_ARG_OPTIONAL, "Print number of seconds to simulate input"},
@@ -42,12 +45,14 @@ struct arguments {
   int quiet;
   int time;
   int flex;
+  int nt;
 };
 
 static error_t parse_options (int key, char *arg, struct argp_state *state)
 {
   struct arguments *arguments = (struct arguments*)(state->input);
   switch (key){
+  case 'm': arguments->nt = atoi(arg); break;  
   case 'n': arguments->noStrict = 1; break;
   case 't': arguments->time = 1; break;
   case 'q': arguments->quiet = 1; break;
@@ -89,21 +94,29 @@ int main (int argc, char **argv)
     fprintf(stderr, "%s, error during the parsing of parameters\n", argv[0]);
     return 1;
   }
-
+  
+  if (arguments.time){
+    t1 = gettime();
+  }
+  
   PajeUnity *unity = new PajeUnity (arguments.flex,
 				    !arguments.noStrict,
 				    std::string(arguments.input[0]),
 				      -1,
-				    0, 0);
+				    0, 0, true, arguments.nt);
 
-  if (arguments.time){
-    printf ("%f\n", unity->getTime());
-  }
+//  if (arguments.time){
+//    printf ("%f\n", unity->getTime());
+//  }
 
   if (!arguments.quiet){
     unity->report();
   }
 
   delete unity;
+  if (arguments.time){
+    t2 = gettime();
+    printf ("%f\n", t2-t1);
+  }
   return 0;
 }

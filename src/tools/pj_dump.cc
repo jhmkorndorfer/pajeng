@@ -162,7 +162,9 @@ int main (int argc, char **argv)
 				    std::string(arguments.input[0]),
 				    arguments.stopat,
 				    arguments.ignoreIncompleteLinks,
-				    arguments.probabilistic);
+				    arguments.probabilistic,
+                                    false,
+                                    1);
 
   if (arguments.probabilistic){
     delete unity;

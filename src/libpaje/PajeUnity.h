@@ -29,9 +29,11 @@ private:
   PajeDefinitions *definitions;
   bool flexReader;
   double t1, t2;
+  bool parallel;
 
 public:
-  PajeUnity (bool flexReader, bool strictHeader, std::string tracefilename, double stopat, int ignoreIncompleteLinks, char *probabilistic);
+  PajeUnity (bool flexReader, bool strictHeader, std::string tracefilename, double stopat, int ignoreIncompleteLinks, char *probabilistic, bool par, int nt);
+  PajeUnity (bool flexReader, bool strictHeader, std::string tracefilename, double stopat, int ignoreIncompleteLinks, char *probabilistic, bool par, PajeContainer *contUn, std::map<std::string,PajeType*> typeMapUn);
   ~PajeUnity ();
   double getTime ();
   void report ();

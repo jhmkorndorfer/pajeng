@@ -27,21 +27,54 @@ PajeSimulator::PajeSimulator ()
   init ();
 }
 
-PajeSimulator::PajeSimulator (double stopat)
+PajeSimulator::PajeSimulator (bool par)
 {
+  parallel =  par;
+  startThreads = par;
+  stopSimulationAtTime = -1;
+  init ();
+}
+
+PajeSimulator::PajeSimulator (double stopat, bool par)
+{
+  parallel =  par;
+  startThreads = par;
   stopSimulationAtTime = stopat;
   init ();
 }
 
-PajeSimulator::PajeSimulator (double stopat, int ignore)
+PajeSimulator::PajeSimulator (double stopat, int ignore, bool par)
 {
+  parallel =  par;
+  startThreads = par;
+  stopSimulationAtTime = stopat;
+  ignoreIncompleteLinks = ignore;
+  init ();
+}
+
+PajeSimulator::PajeSimulator (double stopat, int ignore, bool par, int nt)
+{
+  numThreads = nt;
+  parallel =  par;
+  startThreads = par;
+  stopSimulationAtTime = stopat;
+  ignoreIncompleteLinks = ignore; 
+  init ();
+}
+
+PajeSimulator::PajeSimulator (double stopat, int ignore, bool par, PajeContainer *contUn, std::map<std::string,PajeType*> typeMapUn)
+{
+  parallel =  par;
+  startThreads = par;
+  rootMultiFile = contUn;
+  typeMapMultiFile = typeMapUn;
   stopSimulationAtTime = stopat;
   ignoreIncompleteLinks = ignore;
   init ();
 }
 
 void PajeSimulator::init (void)
-{
+{ 
   invocation[PajeDefineContainerTypeEventId] = &PajeSimulator::pajeDefineContainerType;
   invocation[PajeDefineLinkTypeEventId] = &PajeSimulator::pajeDefineLinkType;
   invocation[PajeDefineEventTypeEventId] = &PajeSimulator::pajeDefineEventType;
@@ -61,12 +94,21 @@ void PajeSimulator::init (void)
   invocation[PajeStartLinkEventId] = &PajeSimulator::pajeStartLink;
   invocation[PajeEndLinkEventId] = &PajeSimulator::pajeEndLink;
   invocation[PajeTraceFileEventId] = &PajeSimulator::pajeTraceFile;
-  rootType = new PajeContainerType ("0", "0", NULL);
-  root = new PajeContainer (0, "0", "0", NULL, rootType, NULL);
-  typeMap[rootType->identifier()] = rootType;
-  typeNamesMap[rootType->name()] = rootType;
-  contMap[root->identifier()] = root;
-  contNamesMap[root->name()] = root;
+  if(parallel){
+    rootType = new PajeContainerType ("0", "0", NULL);
+    root = new PajeContainer (0, "0", "0", NULL, rootType, NULL);
+    typeMap[rootType->identifier()] = rootType;
+    typeNamesMap[rootType->name()] = rootType;
+    contMap[root->identifier()] = root;
+    contNamesMap[root->name()] = root;
+  }else{
+    rootType = new PajeContainerType (rootMultiFile->name(), rootMultiFile->_alias, rootMultiFile->type());  
+    root = rootMultiFile;
+    typeMap = typeMapMultiFile;
+    typeNamesMap[rootType->name()] = rootType;
+    contMap[root->identifier()] = root;
+    contNamesMap[root->name()] = root;  
+  }
   lastKnownTime = -1;
 
   selectionStart = -1;
@@ -143,6 +185,9 @@ PajeColor *PajeSimulator::getColor (std::string color, PajeTraceEvent *event)
 
 PajeSimulator::~PajeSimulator ()
 {
+  if(parallel){
+    delete parallelProcessor;
+  }
   delete root;
   delete rootType;
   typeMap.clear ();
@@ -1043,7 +1088,17 @@ void PajeSimulator::pajeEndLink (PajeTraceEvent *traceEvent)
 
 void PajeSimulator::pajeTraceFile (PajeTraceEvent *traceEvent)
 {
-  std::string containerstr = traceEvent->valueForField (PAJE_Container);
-  std::string typestr = traceEvent->valueForField (PAJE_Type);
+  //Verify if the Thread pool is already started
+  if(startThreads){
+    this->parallelProcessor = new PajeParallelProcessor();
+    this->parallelProcessor->setQueue(this->typeMap, numThreads);
+    startThreads = false;
+  }
+  
+  std::string containerstr = traceEvent->valueForField (PAJE_Container);  
+  PajeContainer *container = contMap[containerstr];
+  PajeContainer *cc = new PajeContainer(container->lastTime(),container->name(),container->_alias,container,container->type(),traceEvent);
   std::string filename = traceEvent->valueForField (PAJE_Filename);
-}
+  //Enqueue file names to be processed
+  this->parallelProcessor->enqueue(filename, cc);
+}  

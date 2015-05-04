@@ -41,6 +41,7 @@ SET(LIBPAJE_HEADERS
   PajeDefinitions.h
   PajeFlexReader.h
   PajeUnity.h
+  PajeParallelProcessor.h
 )
 SET(LIBPAJE_SOURCES
   PajeEventDefinition.cc
@@ -66,6 +67,7 @@ SET(LIBPAJE_SOURCES
   ${BISON_parser_OUTPUTS}
   PajeFlexReader.cc
   PajeUnity.cc
+  PajeParallelProcessor.cc
 )
 
 FIND_PACKAGE(Boost REQUIRED)
